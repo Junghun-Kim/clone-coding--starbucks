@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import './App.css';
-import Layout from './components/Layout.tsx';
-import CreateAccount from './routes/CreateAccount.tsx';
-import Home from './routes/Home.tsx';
-import Login from './routes/Login.tsx';
-import Profile from './routes/Profile.tsx';
+import Layout from './components/Layout';
+import LoadingScreen from './components/LoadingScreen';
+import { auth } from './Firebase';
+import CreateAccount from './routes/CreateAccount';
+import Home from './routes/Home';
+import Login from './routes/Login';
+import Profile from './routes/Profile';
 
 const router = createBrowserRouter([
   {
@@ -47,10 +49,21 @@ body {
 `;
 
 function App() {
+  const [isLoading, setLoading] = useState(true);
+  const init = async() => {
+    // wait for firebase
+    await auth.authStateReady();
+    setLoading(false);
+  }
+  useEffect(()=> {
+    init();
+  })
   return (
     <>
       <GlobalStyles />
-      <RouterProvider router={router} />
+      {isLoading ? <LoadingScreen /> :
+        <RouterProvider router={router} />
+      }
     </>
   );
 }
