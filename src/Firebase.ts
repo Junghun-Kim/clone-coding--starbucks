@@ -6,15 +6,16 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC-F-jrkSL_OTQ1-3JvN0L73OhNXBI1cpg",
-  authDomain: "nwitter-reloaded-dfb8e.firebaseapp.com",
-  projectId: "nwitter-reloaded-dfb8e",
-  storageBucket: "nwitter-reloaded-dfb8e.firebasestorage.app",
-  messagingSenderId: "30210628850",
-  appId: "1:30210628850:web:4ff71c25dd50fdc238c46b"
+  apiKey: "AIzaSyAmRgpQwUxuSG8UVpt-7eVwYe6CULDyggk",
+  authDomain: "nwitter-reloaded-e6df9.firebaseapp.com",
+  projectId: "nwitter-reloaded-e6df9",
+  storageBucket: "nwitter-reloaded-e6df9.firebasestorage.app",
+  messagingSenderId: "616127791716",
+  appId: "1:616127791716:web:015ba2fdf193daf53ed571",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
+const auth = getAuth(app);
+export default auth;

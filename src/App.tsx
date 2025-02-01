@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import './App.css';
 import Layout from './components/Layout';
 import LoadingScreen from './components/LoadingScreen';
-import { auth } from './Firebase';
+import auth from './Firebase';
 import CreateAccount from './routes/CreateAccount';
 import Home from './routes/Home';
 import Login from './routes/Login';
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
       {
         path: 'profile',
         element: <Profile />,
-      }
+      },
     ],
   },
   {
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
   {
     path: '/create-account',
     element: <CreateAccount />,
-  }
+  },
 ]);
 
 const GlobalStyles = createGlobalStyle`
@@ -48,23 +48,27 @@ body {
 }
 `;
 
+const Wrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+`;
+
 function App() {
   const [isLoading, setLoading] = useState(true);
-  const init = async() => {
+  const init = async () => {
     // wait for firebase
     await auth.authStateReady();
     setLoading(false);
-  }
-  useEffect(()=> {
+  };
+  useEffect(() => {
     init();
-  })
+  });
   return (
-    <>
+    <Wrapper>
       <GlobalStyles />
-      {isLoading ? <LoadingScreen /> :
-        <RouterProvider router={router} />
-      }
-    </>
+      {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
+    </Wrapper>
   );
 }
 
