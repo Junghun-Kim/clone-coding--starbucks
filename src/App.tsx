@@ -10,11 +10,16 @@ import CreateAccount from './routes/CreateAccount';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Profile from './routes/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '',
