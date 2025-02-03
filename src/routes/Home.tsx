@@ -1,12 +1,13 @@
 import React from "react";
-import auth from "../Firebase";
+import { styled } from "styled-components";
+import PostTweetForm from "../components/PostTweetForm";
+
+const Wrapper = styled.div``;
 
 export default function Home() {
-  const logOut = () => {
-    auth.signOut();
-  };
-
-  return (<h1>
-    <button onClick={logOut}>Log Out</button>
-  </h1>);
+  return (
+    <>
+      <PostTweetForm />
+    </>
+  );
 }
