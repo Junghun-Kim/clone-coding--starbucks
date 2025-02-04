@@ -1,5 +1,8 @@
+import { addDoc, collection, updateDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { styled } from "styled-components";
+import auth, { db } from "../Firebase";
+import { fileToBase64 } from "../FirebaseUtil";
 
 const Form = styled.form`
     display: flex;
@@ -59,7 +62,7 @@ export default function PostTweetForm() {
     const [isLoading, setLoading] = useState(false);
     const [tweet, setTweet] = useState('');
     const [file, setFile] = useState<File | null>();
-    const onChage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setTweet(e.target.value);
     };
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,8 +73,39 @@ export default function PostTweetForm() {
         }
     };
 
-    return <Form>
-        <TextArea rows={5} maxLength={180} placeholder="What is happening?!" />
+
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user || isLoading || tweet === '' || tweet.length > 180) {
+            return;
+        }
+        try {
+            setLoading(true);
+            const doc = await addDoc(collection(db, 'tweets'), {
+                tweet,
+                createAt: Date.now(),
+                username: user.displayName || 'Anonymous',
+                userId: user.uid,
+            });
+
+            if (file) {
+                const imgString = await fileToBase64(file);
+                await updateDoc(doc, {
+                    photo: imgString,
+                });
+            }
+            setTweet('');
+            setFile(null);
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return <Form onSubmit={onSubmit}>
+        <TextArea required rows={5} maxLength={180} onChange={onChange} value={tweet} placeholder="What is happening?!" />
         <AttachFileButton htmlFor='file'>{file ? 'Photo added ✅' : 'Add photo'}</AttachFileButton>
         <AttachFileInput onChange={onFileChange} type='file' id='file' accept='image/*' />
         <SubmitBtn type='submit' value={isLoading ? 'Posting...' : 'Post Tweet'} />
