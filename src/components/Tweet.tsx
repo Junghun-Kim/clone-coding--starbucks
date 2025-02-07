@@ -1,6 +1,8 @@
 import { styled } from "styled-components";
 import { ITweet } from "./Timeline";
 import React from "react";
+import auth, { db } from "../Firebase";
+import { deleteDoc, doc } from "firebase/firestore";
 
 const Wrapper = styled.div`
     display: grid;
@@ -28,11 +30,37 @@ const Payload = styled.p`
     font-size: 18px;
 `;
 
-export default function Tweet({ username, photo, tweet }: ITweet) {
+const DeleteButton = styled.button`
+    background-color: tomato;
+    color: white;
+    font-weight: 600;
+    border: 0;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+`;
+
+export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
+    const user = auth.currentUser;
+    const onDelete = async () => {
+        const ok = window.confirm('Are you sure you want to delete this tweets?');
+        if (!ok || user?.uid !== userId) {
+            return;
+        }
+        try {
+            await deleteDoc(doc(db, 'tweets', id));
+        } catch (e) {
+
+        }
+    };
+
     return <Wrapper>
         <Column>
             <Username>{username}</Username>
             <Payload>{tweet}</Payload>
+            {user?.uid === userId && <DeleteButton onClick={onDelete}>Delete</DeleteButton>}
         </Column>
         <Column>
             {photo ? (
