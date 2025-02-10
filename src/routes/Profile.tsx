@@ -12,6 +12,7 @@ import auth, { db } from '../Firebase';
 import { fileToBase64 } from '../FirebaseUtil';
 import { ITweet } from '../components/Timeline';
 import Tweet from '../components/Tweet';
+import { updateProfile } from 'firebase/auth';
 
 const Wrapper = styled.div`
   display: flex;
@@ -42,6 +43,30 @@ const Name = styled.span`
   font-size: 22px;
 `;
 
+const EditButton = styled.button`
+  background-color: royalblue;
+  color: white;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
+const CancelButton = styled.button`
+  background-color: red;
+  color: white;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
 const Tweets = styled.div`
   display: flex;
   flex-direction: column;
@@ -49,10 +74,23 @@ const Tweets = styled.div`
   width: 100%;
 `;
 
+const EditNameWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+`;
+
+const NameInput = styled.input``;
+
 export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [isEditingName, setEditingName] = useState(false);
+  const [name, setName] = useState(
+    user?.displayName ? user.displayName : 'Anonymous',
+  );
+
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
 
@@ -99,6 +137,30 @@ export default function Profile() {
     fetchTweets();
   }, []);
 
+  const onEditName = () => {
+    setEditingName(true);
+  };
+
+  const onCancel = () => {
+    setEditingName(false);
+  };
+
+  const onSave = async () => {
+    setEditingName(false);
+
+    if (!user || !name) {
+      return;
+    }
+
+    await updateProfile(user, {
+      displayName: name,
+    });
+  };
+
+  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
   return (
     <Wrapper>
       <AvatarUpload htmlFor='avatar'>
@@ -125,7 +187,21 @@ export default function Profile() {
         type='file'
         accept='image/*'
       ></AvatarInput>
-      <Name>{user?.displayName ? user.displayName : 'Anonymous'}</Name>
+      {!isEditingName ? (
+        <>
+          <Name>{name}</Name>
+          <EditButton onClick={onEditName}>edit name</EditButton>
+        </>
+      ) : (
+        <>
+          <NameInput placeholder={name} onChange={onNameChange}></NameInput>
+          <EditNameWrapper>
+            <EditButton onClick={onSave}>save</EditButton>
+            <CancelButton onClick={onCancel}>cancel</CancelButton>
+          </EditNameWrapper>
+        </>
+      )}
+
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />
