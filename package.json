@@ -16,8 +16,11 @@
     "start": "react-scripts start",
     "start-rewired": "react-app-rewired start",
     "build": "react-scripts build",
+    "build-rewired": "react-app-rewired build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build-rewired",
+    "deploy": "firebase deploy"
   },
   "eslintConfig": {
     "extends": [
